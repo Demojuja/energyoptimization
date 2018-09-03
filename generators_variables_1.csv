@@ -1,0 +1,4 @@
+Month;Generators;Max;Min;Cost;Switchon
+B;100;1;0,0005;50
+L;200;5;0,0008;25
+G;300;10;0,004;50
