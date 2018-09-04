@@ -15,6 +15,7 @@ production = pulp.LpVariable.dicts("products",
                                    ((month, factory) for month, factory in factories.index),
                                    lowBound=0,
                                    cat='Integer')
+
 #Factory status, on or off
 factory_status = pulp.LpVariable.dicts("factory_status",
                                        ((month, factory) for month, factory in factories.index),
@@ -24,14 +25,14 @@ switch_on = pulp.LpVariable.dicts("switch:on",
                                   ((month, factory) for month, factory in factories.index),
                                   cat='Binary')
 
-
+print(factories.index)
 # Instantiate the model
 model = pulp.LpProblem("Cost minimising scheduling problem", pulp.LpMinimize)
 
 # Select index on factory A or B
 factory_A_index = [tpl for tpl in factories.index if tpl[1] == 'A']
 factory_B_index = [tpl for tpl in factories.index if tpl[1] == 'B']
-print(factory_A_index)
+#print(factory_A_index)
 
 # Define objective function
 model += pulp.lpSum(
