@@ -25,7 +25,7 @@ switch_on = pulp.LpVariable.dicts("switch:on",
                                   ((month, factory) for month, factory in factories.index),
                                   cat='Binary')
 
-print(factories.index)
+
 # Instantiate the model
 model = pulp.LpProblem("Cost minimising scheduling problem", pulp.LpMinimize)
 
