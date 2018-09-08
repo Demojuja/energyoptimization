@@ -2,10 +2,10 @@ import pandas as pd
 import pulp
 
 factories = pd.read_csv('factory_variables_1.csv', sep=';', index_col=['Month', 'Factory'])
-print(factories)
+#print(factories)
 
 demand = pd.read_csv('monthly_demand_1.csv', sep=';', index_col=['Month'])
-print(demand)
+#print(demand)
 #our start-up costs will be:
 #Factory A- 20000Euro
 #Factory B- 400000Euro
@@ -15,6 +15,11 @@ production = pulp.LpVariable.dicts("products",
                                    ((month, factory) for month, factory in factories.index),
                                    lowBound=0,
                                    cat='Integer')
+
+# something = ((month, factory) for month, factory in factories.index);
+# for n in something:
+#     print(n[1]);
+
 #Factory status, on or off
 factory_status = pulp.LpVariable.dicts("factory_status",
                                        ((month, factory) for month, factory in factories.index),
@@ -31,7 +36,10 @@ model = pulp.LpProblem("Cost minimising scheduling problem", pulp.LpMinimize)
 # Select index on factory A or B
 factory_A_index = [tpl for tpl in factories.index if tpl[1] == 'A']
 factory_B_index = [tpl for tpl in factories.index if tpl[1] == 'B']
-print(factory_A_index)
+#print(factory_A_index)
+
+for n in [production[m, f] * factories.loc[(m, f), 'Variable_Costs'] for m, f in factories.index]:
+    print(n);
 
 # Define objective function
 model += pulp.lpSum(
@@ -69,7 +77,7 @@ for month, factory in factories.index:
         model += switch_on[month, factory] <= factory_status[month, factory]
 
 model.solve()
-print(pulp.LpStatus[model.status])
+#print(pulp.LpStatus[model.status])
 
 
 
@@ -85,10 +93,10 @@ for month, factory in production:
     output.append(var_output)
 output_df = pd.DataFrame.from_records(output).sort_values(['Month', 'Factory'])
 output_df.set_index(['Month', 'Factory'], inplace=True)
-print(output_df)
+#print(output_df)
 
 #Print our objective function value (Total Costs)
-print(pulp.value(model.objective));
+#print(pulp.value(model.objective));
 
 
 
