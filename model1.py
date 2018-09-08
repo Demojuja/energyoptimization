@@ -10,8 +10,8 @@ demandParam = pd.read_csv('demand_variables_1.csv', sep=';', index_col=['Month']
 # print(generatorsParam.loc['L','Max'])
 
 # DECISION VARIABLES
-genOutVarNames = [];
-genOnOffVarNames = [];
+genOutVarNames = []
+genOnOffVarNames = []
 for gen in generatorsParam.index:
     for month in demandParam.index:
         # DECISION VARIABLE: p(i,t), generator Output per generator and month
@@ -23,26 +23,32 @@ for gen in generatorsParam.index:
 # print(genOutVarNames);
 genOutLpVar = pulp.LpVariable.dicts("genOut",
                                     genOutVarNames,
-                                    cat='Integer');
+                                    cat='Integer')
 
 genOnOffLpVar = pulp.LpVariable.dicts("genOnOff",
                                       genOnOffVarNames,
-                                      cat='Binary');
+                                      cat='Binary')
 
-# MODEL
-toSum = [];
+# MODEL OBJECTIVE
+toSum = []
 for gen in generatorsParam.index:
     for month in demandParam.index:
         idx = 'p(' + gen + ',' + str(month) + ')'
         toSum.append(genOutLpVar[idx] * float(generatorsParam.loc[gen, 'Cost']))
-
+#print(toSum);
 model = pulp.LpProblem("Cost minimising scheduling problem", pulp.LpMinimize)
-model += pulp.lpSum(toSum)
+model += pulp.lpSum(toSum), "Output*Costs for each generator and each month"
 
-# model = pulp.LpProblem("Cost minimising scheduling problem", pulp.LpMinimize)
-# model += pulp.lpSum(
-#     [production[m, f] * factories.loc[(m, f), 'Variable_Costs'] for m, f in factories.index]
-#     + [factory_status[m, f] * factories.loc[(m, f), 'Fixed_Costs'] for m, f in factories.index]
-#     + [switch_on[m, f] * 20000 for m, f in factory_A_index]
-#     + [switch_on[m, f] * 400000 for m, f in factory_B_index]
-# )
+# MODEL CONSTRAINTS
+for month in demandParam.index:
+    generatorsSum = []
+    for gen in generatorsParam.index:
+        idx = 'p(' + gen + ',' + str(month) + ')'
+        generatorsSum.append(genOutLpVar[idx])
+    model += pulp.lpSum(generatorsSum) - demandParam.loc[month] == 0, "Meet demand for month " + str(month)
+
+print(model);
+
+# model.solve()
+# print(pulp.LpStatus[model.status])
+
