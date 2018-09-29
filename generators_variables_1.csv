@@ -1,4 +1,4 @@
-Generators;Max;Min;Cost;Switchon
-B;100;1;0.0005;50
-L;200;5;0.0008;25
-G;300;10;0.004;50
+Generators;Max;Min;VCost;FCost;Emission
+Braun;100;1;5;10;60
+Schwarz;200;5;5;10;70
+Gas;300;10;5;10;100
